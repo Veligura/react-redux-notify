@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { removeNotification, removeAllNotifications, NOTIFICATIONS_POS_TOP_RIGHT } from 'modules/Notifications';
 import { default as Notification } from 'components/Notification';
 import styleMap from './Notify.scss';
@@ -61,32 +61,35 @@ export class Notify extends React.PureComponent {
     let { styles } = this.props;
     styles = Object.assign({}, styles, customStyles);
     const notificationsContainerClass = styles[`container${position}`];
-
     return (
         <div className={notificationsContainerClass}>
-          <ReactCSSTransitionGroup
+          <TransitionGroup
               component="div"
               className={styles.wrapper}
-              transitionName={ { enter: styles.enter,
-                leave: styles.leave,
-              } }
-              transitionEnterTimeout={transitionDurations.enter}
-              transitionLeaveTimeout={transitionDurations.leave}>
+              >
             {
               notifications.map((notification, i) => {
                 const NewNotification = notification.customComponent || notificationComponent;
                 return (
+                  <CSSTransition
+                  classNames={{
+                    enter: styles.enter,
+                    exit: styles.exit,
+                  }}
+                  timeout={{ enter: transitionDurations.enter, exit: transitionDurations.leave }}
+                  key={notification.id}
+                  >
                   <NewNotification
-                    key={notification.id}
                     {...notification}
                     isFirst={(i === 0 && notifications.length > 1)}
                     handleDismiss={this.handleDismiss}
                     handleDismissAll={this.handleDismissAll}
                   />
+                  </CSSTransition>
                 );
               })
             }
-          </ReactCSSTransitionGroup>
+          </TransitionGroup>
         </div>
     );
   }

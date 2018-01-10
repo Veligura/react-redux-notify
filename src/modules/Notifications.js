@@ -13,13 +13,13 @@ export const REMOVE_ALL_NOTIFICATIONS = 'REMOVE_ALL_NOTIFICATIONS';
 
 // Action Creators
 export function createNotification(notification) {
-  return {
+  const session = {
     type: ADD_NOTIFICATION,
     notification: {
       ...notification,
-      id: Date.now(),
     },
   };
+  return session;
 }
 
 export function removeNotification(id) {
@@ -41,7 +41,7 @@ export const initialState = [];
 export default function (state = initialState, action) {
   switch (action.type) {
     case ADD_NOTIFICATION:
-      return [...state, action.notification];
+      return [...state, { id: new Date().getUTCMilliseconds(), ...action.notification }];
     case REMOVE_NOTIFICATION:
       return state.filter(item => item.id !== action.id);
     case REMOVE_ALL_NOTIFICATIONS:
